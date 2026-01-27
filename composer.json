@@ -1,5 +1,5 @@
 {
-    "name": "misaf/email-webhooks",
+    "name": "misaf/laravel-email-webhooks",
     "description": "Core package for handling email webhook events in Laravel applications.",
     "type": "library",
     "version": "v1.0.1",
