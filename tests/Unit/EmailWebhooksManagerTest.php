@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Event;
-use Misaf\EmailWebhooks\Facades\EmailWebhooks;
+use Misaf\LaravelEmailWebhooks\Facades\EmailWebhooks;
 
 beforeEach(function (): void {
     Event::fake();
@@ -11,23 +11,23 @@ beforeEach(function (): void {
 
 describe('EmailWebhookManager', function (): void {
     it('throws exception when no default driver is configured', function (): void {
-        config(['services.email.webhooks.default_provider' => null]);
+        config(['services.email-webhooks.default_provider' => null]);
 
-        expect(fn () => EmailWebhooks::getDefaultDriver())
+        expect(fn() => EmailWebhooks::getDefaultDriver())
             ->toThrow(
                 InvalidArgumentException::class,
-                'Configuration value for key [services.email.webhooks.default_provider] must be a string, NULL given.',
+                'Please set services.email-webhooks.default_provider in your config.',
             );
     });
 
     it('returns configured default driver', function (): void {
-        config(['services.email.webhooks.default_provider' => 'test-provider']);
+        config(['services.email-webhooks.default_provider' => 'test-provider']);
 
         expect(EmailWebhooks::getDefaultDriver())->toBe('test-provider');
     });
 
     it('throws exception for unsupported driver', function (): void {
-        expect(fn () => EmailWebhooks::driver('unsupported'))
+        expect(fn() => EmailWebhooks::driver('unsupported'))
             ->toThrow(
                 InvalidArgumentException::class,
                 'Driver [unsupported] not supported.',

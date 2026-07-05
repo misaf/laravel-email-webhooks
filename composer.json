@@ -2,7 +2,6 @@
     "name": "misaf/laravel-email-webhooks",
     "description": "Core package for handling email webhook events in Laravel applications.",
     "type": "library",
-    "version": "v1.0.0",
     "license": "MIT",
     "keywords": [
         "laravel",
@@ -18,11 +17,20 @@
         }
     ],
     "require": {
-        "php": "^8.3"
+        "php": "^8.3",
+        "illuminate/support": "^13.0",
+        "spatie/laravel-webhook-client": "^3.4.3",
+        "spatie/laravel-package-tools": "^1.92"
     },
     "require-dev": {
-        "pestphp/pest": "^3.0",
-        "orchestra/testbench": "^9.0"
+        "laravel/pint": "^1.0",
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-arch": "^4.0",
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "pestphp/pest-plugin-profanity": "^4.2.1",
+        "pestphp/pest-plugin-type-coverage": "^4.0.3",
+        "orchestra/testbench": "^11.0",
+        "larastan/larastan": "^3.0"
     },
     "scripts": {
         "analyse": "vendor/bin/phpstan analyse",
@@ -32,14 +40,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Misaf\\EmailWebhooks\\": "src/",
-            "Misaf\\EmailWebhooks\\Tests\\": "tests/"
+            "Misaf\\LaravelEmailWebhooks\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Misaf\\LaravelEmailWebhooks\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Misaf\\EmailWebhooks\\Providers\\EmailWebhooksServiceProvider"
+                "Misaf\\LaravelEmailWebhooks\\EmailWebhooksServiceProvider"
             ]
         }
     },
