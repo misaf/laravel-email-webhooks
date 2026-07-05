@@ -1,58 +1,48 @@
 # Laravel Email Webhooks
 
-**Core package for handling email webhook events in Laravel applications.**
-
-## Features
-
-- Easily handle incoming email webhook events.
-- Built for Laravel 10+.
-- Simple integration with your Laravel application.
-- Fully tested with Pest and Orchestra Testbench.
+Provider-neutral Laravel 13 package for parsing email webhook payloads into DTOs and dispatching Laravel events.
 
 ## Requirements
 
-- PHP ^8.3
-- Laravel 10+
+- PHP 8.4+
+- Laravel 13
 
 ## Installation
 
-You can install the package via Composer:
-
 ```bash
 composer require misaf/laravel-email-webhooks
+```
 
-Usage
+The service provider is auto-discovered by Laravel.
 
-Publish the service provider (if you need to customize):
+## Usage
 
-php artisan vendor:publish --provider="Misaf\EmailWebhooks\Providers\EmailWebhooksServiceProvider"
+Create a provider driver by extending `Misaf\LaravelEmailWebhooks\EmailWebhooksDriver`, then register it with the manager:
 
+```php
+use Misaf\LaravelEmailWebhooks\Facades\EmailWebhooks;
+use Vendor\Package\ProviderEmailWebhooksDriver;
 
-Handle webhook events by creating your own controllers or using the provided routes:
+EmailWebhooks::extend('provider', fn ($app) => $app->make(ProviderEmailWebhooksDriver::class));
+```
 
-use Misaf\EmailWebhooks\Facades\EmailWebhooks;
+Process a validated provider payload through the configured driver:
 
-EmailWebhooks::listen('event-name', function ($payload) {
-    // Handle the event
-});
+```php
+use Misaf\LaravelEmailWebhooks\Facades\EmailWebhooks;
 
+$eventData = EmailWebhooks::driver('provider')->processEvent($payload);
+```
 
-Configure the webhook routes in your routes/web.php or routes/api.php if needed:
+The package dispatches these Laravel events:
 
-Route::post('/email/webhook', [\Misaf\EmailWebhooks\Controllers\WebhookController::class, 'handle']);
+- `Misaf\LaravelEmailWebhooks\Events\EmailSent`
+- `Misaf\LaravelEmailWebhooks\Events\EmailBounced`
+- `Misaf\LaravelEmailWebhooks\Events\EmailComplained`
+- `Misaf\LaravelEmailWebhooks\Events\EmailFailed`
 
-Testing
+## Testing
 
-The package uses Pest
- and Orchestra Testbench
- for testing:
-
+```bash
 composer test
-
-Contributing
-
-Feel free to submit issues or pull requests. All contributions are welcome!
-
-License
-
-This package is open-sourced under the MIT license.
+```

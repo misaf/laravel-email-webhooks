@@ -3,9 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Event;
-use Misaf\EmailWebhooks\Facades\EmailWebhooks;
-use Misaf\EmailWebhooks\Services\EmailWebhooksService;
-use Misaf\EmailWebhooks\Tests\Helpers\TestEmailEventDto;
+use Misaf\LaravelEmailWebhooks\Facades\EmailWebhooks;
+use Misaf\LaravelEmailWebhooks\Tests\Helpers\TestEmailEvent;
 
 beforeEach(function (): void {
     Event::fake();
@@ -13,7 +12,7 @@ beforeEach(function (): void {
 
 describe('Email Webhook Integration', function (): void {
     it('can process email events through the complete workflow', function (): void {
-        $eventData = TestEmailEventDto::fromArray([
+        $eventData = TestEmailEvent::fromArray([
             'type'   => 'email.bounced',
             'bounce' => [
                 'type'    => 'Permanent',
@@ -22,45 +21,30 @@ describe('Email Webhook Integration', function (): void {
             ],
         ]);
 
-        $service = new EmailWebhooksService($eventData);
-
-        expect($service->isHardBounce())->toBeTrue();
-        expect($service->getEventData())->toBe($eventData);
-        expect($service->getPrimaryRecipient())->toBe('test@example.com');
+        expect($eventData->isHardBounce())->toBeTrue();
+        expect($eventData->primaryRecipient())->toBe('test@example.com');
     });
 
-    it('can handle different email event types', function (): void {
-        $events = [
-            'email.sent'       => ['shouldBeBounce' => false],
-            'email.bounced'    => ['shouldBeBounce' => true],
-            'email.complained' => ['shouldBeBounce' => false],
-        ];
+    it('can handle the :dataset event type', function (string $eventType, bool $shouldBeBounce): void {
+        $payload = ['type' => $eventType];
 
-        foreach ($events as $eventType => $expectations) {
-            $data = ['type' => $eventType];
-
-            if ('email.bounced' === $eventType) {
-                $data['bounce'] = [
-                    'type'    => 'Permanent',
-                    'message' => 'Test bounce message',
-                    'subType' => 'General',
-                ];
-            }
-
-            $eventData = TestEmailEventDto::fromArray($data);
-            $service = new EmailWebhooksService($eventData);
-
-            // wasSuccessful() always returns true as per the service implementation
-            expect($service->wasSuccessful())->toBeTrue();
-
-            if ($expectations['shouldBeBounce']) {
-                expect($service->isHardBounce())->toBeTrue();
-            }
+        if ('email.bounced' === $eventType) {
+            $payload['bounce'] = [
+                'type'    => 'Permanent',
+                'message' => 'Test bounce message',
+                'subType' => 'General',
+            ];
         }
-    });
+
+        expect(TestEmailEvent::fromArray($payload)->isHardBounce())->toBe($shouldBeBounce);
+    })->with([
+        'sent'       => ['email.sent', false],
+        'bounced'    => ['email.bounced', true],
+        'complained' => ['email.complained', false],
+    ]);
 
     it('can retrieve default driver configuration', function (): void {
-        config(['services.email.webhooks.default_provider' => 'test-provider']);
+        config(['services.email-webhooks.default_provider' => 'test-provider']);
 
         expect(EmailWebhooks::getDefaultDriver())->toBe('test-provider');
     });
