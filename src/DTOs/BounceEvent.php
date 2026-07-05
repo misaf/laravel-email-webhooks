@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Misaf\LaravelEmailWebhooks\DTOs;
 
+/**
+ * @phpstan-consistent-constructor
+ */
 class BounceEvent
 {
     public const string TypePermanent = 'Permanent';
