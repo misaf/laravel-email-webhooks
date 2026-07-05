@@ -49,6 +49,9 @@
         }
     },
     "extra": {
+        "branch-alias": {
+            "dev-refactor/laravel-13-restructure": "1.0.x-dev"
+        },
         "laravel": {
             "providers": [
                 "Misaf\\LaravelEmailWebhooks\\EmailWebhooksServiceProvider"
