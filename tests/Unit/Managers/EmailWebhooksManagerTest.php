@@ -13,10 +13,10 @@ describe('EmailWebhookManager', function (): void {
     it('throws exception when no default driver is configured', function (): void {
         config(['services.email.webhooks.default_provider' => null]);
 
-        expect(fn() => EmailWebhooks::getDefaultDriver())
+        expect(fn () => EmailWebhooks::getDefaultDriver())
             ->toThrow(
                 InvalidArgumentException::class,
-                'Please set services.email.webhooks.default_provider in your config.',
+                'Configuration value for key [services.email.webhooks.default_provider] must be a string, NULL given.',
             );
     });
 
@@ -27,7 +27,7 @@ describe('EmailWebhookManager', function (): void {
     });
 
     it('throws exception for unsupported driver', function (): void {
-        expect(fn() => EmailWebhooks::driver('unsupported'))
+        expect(fn () => EmailWebhooks::driver('unsupported'))
             ->toThrow(
                 InvalidArgumentException::class,
                 'Driver [unsupported] not supported.',
